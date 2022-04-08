@@ -5,6 +5,10 @@ import is from '@prunus/is'
 export class MixinTraitCollection {
   private _traits: MixinTrait[] = []
 
+  public get length() {
+    return this._traits.length
+  }
+
   public includes(constructor: Constructor | MixinTrait) {
     if (is.instanceOf(constructor, MixinTrait))
 
