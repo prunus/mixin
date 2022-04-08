@@ -18,27 +18,24 @@ export class MixinSuper {
   }
 
   public super(context: AnyObject) {
-    const sOfSuper = {}
+    const sOfSuper: AnyObject = {}
 
     for (const [property, traits] of Object.entries(this._relations)) {
-      if (!traits.length) continue
-
-      if (traits.length > 1) continue
-
       const trait = traits[0]
-      const descriptor = trait.getOwnPropertyDescriptor(property)
+      const { set, get, value, ...descriptor } = trait.getOwnPropertyDescriptor(property)
 
-      if (descriptor.get || descriptor.set)
+      if (get || set) {
         Object.defineProperty(sOfSuper, property, {
           ...descriptor,
-          get: () => descriptor.get?.call(context),
-          set: (value) => descriptor.set?.call(context, value),
+          get: !get ? undefined : () => get.call(context),
+          set: !set ? undefined : (value) => set.call(context, value),
         })
+      }
 
-      else if (typeof descriptor.value === 'function')
+      else if (typeof value === 'function')
         Object.defineProperty(sOfSuper, property, {
           ...descriptor,
-          value: (...args: any[]) => descriptor.value.apply(context, ...args)
+          value: (...args: any[]) => value.apply(context, ...args)
         })
 
       else Object.defineProperty(sOfSuper, property, descriptor)
