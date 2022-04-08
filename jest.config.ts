@@ -4,7 +4,7 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testMatch: ['**\/src\/**\/*\.spec\.ts'],
   collectCoverageFrom: ['**/src/**'],
-  coveragePathIgnorePatterns: [ '**/src/index.ts' ],
+  coveragePathIgnorePatterns: [ '<rootDir>/src/index.ts' ],
   coverageDirectory: 'coverage',
   coverageReporters: [
     ['text', { skipFull: true }]
