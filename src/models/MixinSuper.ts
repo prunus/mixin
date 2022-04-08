@@ -38,7 +38,7 @@ export class MixinSuper {
           value: (...args: any[]) => value.apply(context, ...args)
         })
 
-      else Object.defineProperty(sOfSuper, property, descriptor)
+      else Object.defineProperty(sOfSuper, property, { value, ...descriptor })
     }
 
     return sOfSuper
