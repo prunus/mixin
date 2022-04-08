@@ -158,7 +158,7 @@ Just kidding, we don't need to do this anymore right? right...?
 ### **TypeScript**
 If you use typescript it's simple, let's tax some of our features for that.
 
-```json
+```jsonc
 {
   "compilerOptions": {
     // ...
