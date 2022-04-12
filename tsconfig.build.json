@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",                               /* Specify the root folder within your source files. */
+    "outDir": "./dist",                               /* Specify an output folder for all emitted files. */
+    "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+  },
+  "exclude": ["**/*.spec.ts", "jest.config.ts", "dist"],
+}
