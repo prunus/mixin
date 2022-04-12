@@ -28,9 +28,4 @@ export class MixinTraitCollection {
   public construct(context: AnyObject, ...args: any[]) {
     this._traits.forEach(trait => trait.construct(context, ...args))
   }
-
-  public each(fn: (trait: MixinTrait) => void) {
-    this._traits.forEach(trait => fn(trait))
-    return this
-  }
 }
