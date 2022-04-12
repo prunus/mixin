@@ -1,4 +1,4 @@
-import { Constructor } from "../helpers/types";
+import { AnyObject, Constructor } from "../helpers/types";
 import { MixinTrait } from "./MixinTrait";
 import is from '@prunus/is'
 
@@ -23,6 +23,10 @@ export class MixinTraitCollection {
     this._traits.push(MixinTrait.instance(constructor))
 
     return this
+  }
+
+  public construct(context: AnyObject, ...args: any[]) {
+    this._traits.forEach(trait => trait.construct(context, ...args))
   }
 
   public each(fn: (trait: MixinTrait) => void) {

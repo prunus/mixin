@@ -1,3 +1,5 @@
+import { Mixin } from "../decorators/Mixin"
+import { Trait } from "../decorators/Trait"
 import { AnyObject } from "../helpers/types"
 import { MixinTrait } from "./MixinTrait"
 
@@ -66,5 +68,15 @@ describe('MixinTrait', () => {
   it('should be return trait instance from instance F', () => {
     class Test {}
     expect(MixinTrait.instance(MixinTrait.instance(Test))).toBe(MixinTrait.instance(Test))
+  })
+
+  it('should be test instanceof', () => {
+    class Trait {}
+    @Mixin(Trait)
+    class Test {}
+
+    const instance = new Test()
+    expect(instance instanceof Trait).toBe(true)
+    expect(new Trait() instanceof Trait).toBe(true)
   })
 })

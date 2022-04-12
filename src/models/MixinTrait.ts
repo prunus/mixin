@@ -2,9 +2,14 @@ import is from '@prunus/is';
 import { getOwnProperties } from "../helpers/getOwnProperties";
 import { getOwnPropertyDescriptor } from '../helpers/getOwnPropertyDescriptor';
 import { getOwnPropertyDescriptors } from "../helpers/getOwnPropertyDescriptors";
+import { includes } from '../helpers/includes';
 import { AnyObject, Constructor } from "../helpers/types";
 
 const traits = new Map<Function | Constructor, MixinTrait>()
+
+export interface MixinTraitOptions {
+  includes: typeof includes
+}
 
 export class MixinTrait {
   private _dependencies: MixinTrait[] = []
@@ -25,7 +30,15 @@ export class MixinTrait {
     throw new Error()
   }
 
-  constructor(protected _constructor: Function | Constructor) {}
+  constructor(protected _constructor: Function | Constructor) {
+    Object.defineProperty(_constructor, Symbol.hasInstance, {
+      value: (instance: AnyObject) =>
+        _constructor.prototype.isPrototypeOf(instance) || includes(instance, _constructor as Constructor),
+      enumerable: false,
+      configurable: false,
+      writable: false,
+    })
+  }
 
   public getDependencies(): MixinTrait[] {
     return [

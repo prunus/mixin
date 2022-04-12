@@ -6,7 +6,7 @@ import { MixinSuper } from './MixinSuper';
 import { MixinTrait } from './MixinTrait';
 import { MixinTraitCollection } from './MixinTraitCollection';
 
-export class MixinDesign extends MixinTrait {
+export class MixinDesign {
   private _traits = new MixinTraitCollection()
   private _super = new MixinSuper()
   private _prototype: (keyof AnyObject)[]
@@ -37,19 +37,18 @@ export class MixinDesign extends MixinTrait {
     throw new Error()
   }
 
-  constructor(_constructor: Function | Constructor) {
-    super(_constructor)
+  constructor(private _constructor: Function | Constructor) {
     this._prototype = getOwnProperties(_constructor.prototype)
   }
 
-  public override construct(context: AnyObject, ...args: unknown[]) {
-    for (const [property, descriptor] of this.getOwnPropertyDescriptors())
+  public construct(context: AnyObject, ...args: unknown[]) {
+    for (const property of Reflect.ownKeys(this._constructor.prototype))
 
-      Object.defineProperty(context, property, descriptor)
+      Object.defineProperty(context, property, Reflect.getOwnPropertyDescriptor(this._constructor.prototype, property) ?? {})
 
-    this._traits.each(trait => trait.construct(context, ...args))
+    this._traits.construct(context, ...args)
 
-    super.construct(context, ...args)
+    ;(this._constructor as Function).apply(context, args)
 
     context.super = this._super.super(context)
 
