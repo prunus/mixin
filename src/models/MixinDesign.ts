@@ -1,10 +1,10 @@
+import { MIXIN_CONSTRUCTOR } from '../constants';
+import { designs } from '../helpers/designs';
 import { getOwnProperties } from '../helpers/getOwnProperties';
 import { AnyObject, Constructor } from "../helpers/types";
 import { MixinSuper } from './MixinSuper';
 import { MixinTrait } from './MixinTrait';
 import { MixinTraitCollection } from './MixinTraitCollection';
-
-const designs = new Map<Function | Constructor, MixinDesign>()
 
 export class MixinDesign extends MixinTrait {
   private _traits = new MixinTraitCollection()
@@ -21,11 +21,15 @@ export class MixinDesign extends MixinTrait {
 
     }
 
-    if (typeof target === 'object' && target !== null && typeof target.constructor === 'function') {
+    if (typeof target === 'object' && target !== null) {
 
-      if (designs.has(target.constructor))
+      const key = [MIXIN_CONSTRUCTOR, 'constructor'].find(key => typeof target[key] === 'function')!
 
-        return designs.get(target.constructor)!
+      if (target[key] === Object) throw new Error()
+
+      if (designs.has(target[key]))
+
+        return designs.get(target[key])!
 
       throw new Error()
     }
@@ -40,6 +44,7 @@ export class MixinDesign extends MixinTrait {
 
   public override construct(context: AnyObject, ...args: unknown[]) {
     for (const [property, descriptor] of this.getOwnPropertyDescriptors())
+
       Object.defineProperty(context, property, descriptor)
 
     this._traits.each(trait => trait.construct(context, ...args))
@@ -48,7 +53,13 @@ export class MixinDesign extends MixinTrait {
 
     context.super = this._super.super(context)
 
+    Object.defineProperty(context, MIXIN_CONSTRUCTOR, { value: this._constructor, enumerable: false, writable: false, configurable: false })
+
     return context
+  }
+
+  public includes(trait: Function | Constructor) {
+    return this._traits.includes(trait)
   }
 
   public use(...constructors: Constructor[]) {

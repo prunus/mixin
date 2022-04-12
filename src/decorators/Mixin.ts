@@ -1,3 +1,6 @@
+import { designs } from '../helpers/designs'
+import { includes } from '../helpers/includes'
+import { isMixin } from '../helpers/isMixin'
 import { AnyObject, Constructor } from '../helpers/types'
 import { MixinDesign } from '../models/MixinDesign'
 
@@ -10,6 +13,8 @@ export const Mixin = (...traits: Constructor[]): ClassDecorator => {
       return this
     }
 
+    designs.set(mixin, design)
+
     Object.defineProperty(mixin, 'name', { value: target.name })
 
     if (traits.length) design.use(...traits)
@@ -17,3 +22,6 @@ export const Mixin = (...traits: Constructor[]): ClassDecorator => {
     return mixin as unknown as T
   }
 }
+
+Mixin.isMixin = isMixin
+Mixin.includes = includes

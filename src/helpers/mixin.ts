@@ -1,4 +1,6 @@
 import { MixinDesign } from "../models/MixinDesign"
+import { includes } from "./includes"
+import { isMixin } from "./isMixin"
 import { AnyObject, Constructor, Fn, TryConstructor } from "./types"
 
 export const mixin = <T extends Fn | Constructor>(target: T) => {
@@ -16,3 +18,6 @@ export const mixin = <T extends Fn | Constructor>(target: T) => {
     return mixin as TryConstructor<T>
   }
 }
+
+mixin.isMixin = isMixin
+mixin.includes = includes

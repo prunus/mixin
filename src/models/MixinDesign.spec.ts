@@ -201,4 +201,10 @@ describe('MixinDesign', () => {
     expect(() => { instance.property = false }).toThrowError()
     expect(set).toHaveBeenCalled()
   })
+
+  it('should be throw error on cast instance of design in anothers types', () => {
+    for (const type of [null, undefined, {}, true, 1, 'string'])
+      // @ts-expect-error: I know typescript, it's a test man.
+      expect(() => MixinDesign.instance(type)).toThrowError()
+  })
 })

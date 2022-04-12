@@ -59,7 +59,7 @@ export class MixinTrait {
     return context
   }
 
-  public is(constructor: Constructor) {
+  public is(constructor: Constructor | Function) {
     return this._constructor === constructor
   }
 }

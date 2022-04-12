@@ -9,7 +9,7 @@ export class MixinTraitCollection {
     return this._traits.length
   }
 
-  public includes(constructor: Constructor | MixinTrait) {
+  public includes(constructor: Constructor | Function | MixinTrait) {
     if (is.instanceOf(constructor, MixinTrait))
 
       return this._traits.includes(constructor)
