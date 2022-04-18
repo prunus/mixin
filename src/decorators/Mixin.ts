@@ -13,6 +13,8 @@ export const Mixin = (...traits: Constructor[]): ClassDecorator => {
       return this
     }
 
+    mixin.prototype = target.prototype
+
     designs.set(mixin, design)
 
     Object.defineProperty(mixin, 'name', { value: target.name })
