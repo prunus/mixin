@@ -46,7 +46,7 @@ export class MixinDesign {
   public construct(context: AnyObject, ...args: unknown[]) {
     for (const [property, descriptor] of getOwnPropertyDescriptors(this._constructor.prototype)) {
       
-      if (typeof descriptor.value === 'function' && property in context) continue
+      if (typeof descriptor.value === 'function' && property in context && context[property]) continue
 
       Object.defineProperty(context, property, { ...descriptor, ...getOwnPropertyDescriptor(context, property) })
     }
