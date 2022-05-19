@@ -1,6 +1,7 @@
 import { MIXIN_CONSTRUCTOR } from '../constants';
 import { designs } from '../helpers/designs';
 import { getOwnProperties } from '../helpers/getOwnProperties';
+import { getOwnPropertyDescriptor } from '../helpers/getOwnPropertyDescriptor';
 import { getOwnPropertyDescriptors } from '../helpers/getOwnPropertyDescriptors';
 import { AnyObject, Constructor } from "../helpers/types";
 import { MixinSuper } from './MixinSuper';
@@ -43,9 +44,12 @@ export class MixinDesign {
   }
 
   public construct(context: AnyObject, ...args: unknown[]) {
-    for (const [property, descriptor] of getOwnPropertyDescriptors(this._constructor.prototype))
+    for (const [property, descriptor] of getOwnPropertyDescriptors(this._constructor.prototype)) {
+      
+      if (typeof descriptor.value === 'function' && property in context) continue
 
-      Object.defineProperty(context, property, descriptor)
+      Object.defineProperty(context, property, { ...descriptor, ...getOwnPropertyDescriptor(context, property) })
+    }
 
     this._traits.construct(context, ...args)
 
