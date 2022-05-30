@@ -1,6 +1,6 @@
 {
   "name": "@prunus/mixin",
-  "version": "0.0.9",
+  "version": "0.0.0-experimental-6376996",
   "main": "dist/index.js",
   "author": "Tony <tony.js@zoho.eu>",
   "license": "MIT",
