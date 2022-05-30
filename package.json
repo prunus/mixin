@@ -18,7 +18,5 @@
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.3"
   },
-  "dependencies": {
-    "@prunus/is": "^0.0.0-alpha.2"
-  }
+  "dependencies": {}
 }

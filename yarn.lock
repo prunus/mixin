@@ -496,11 +496,6 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@prunus/is@^0.0.0-alpha.2":
-  version "0.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@prunus/is/-/is-0.0.0-alpha.2.tgz#f6cc2940b8c2e17bbfbefbf30f7ebbf7394cf1bc"
-  integrity sha512-y9Rn2SnJMc4qFhXYT1Yp2SN7ZlMH81v0Qq4g+28kDTwWpdTt74NLtLxOFLPYz7PYgOrDrjB1POEkxD6GVsaEtg==
-
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.3.tgz#3802ddd21a50a949b6721ddd72da36e67e7f1b2d"
