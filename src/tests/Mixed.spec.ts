@@ -159,7 +159,6 @@ describe('Mixed', () => {
     class MiddleClass4 extends Mixed(MiddleClass3, Trait7, Trait8) {}
 
     class Test extends Mixed(MiddleClass4, Trait9, Trait10) {}
-    
 
     describe.each([
       [Trait1, [Trait1]],
@@ -180,5 +179,84 @@ describe('Mixed', () => {
           expect(new constructor()).not.toBeInstanceOf(expected)
         })
     })
+  })
+
+  it('should share a trait with multiple mixins', () => {
+    class Trait {}
+    class TestA extends Mixed(Trait) {}
+    class TestB extends Mixed(Trait) {}
+  
+    expect(new TestA).toBeInstanceOf(Trait)
+    expect(new TestB).toBeInstanceOf(Trait)
+  })
+
+  it('should inherit from your trait\'s trait', () => {
+    const fn = jest.fn()
+    class Trait {
+      method() {
+        fn()
+      }
+    }
+    class IntermediateTrait extends Mixed(Trait) {}
+    class Test extends Mixed(IntermediateTrait) {}
+
+    new Test().method()
+    expect(fn).toHaveBeenCalled()
+  })
+
+  it('should inherit from its trait its prototype methods and statics', () => {
+    const [t1, t2, ts1, test] = [jest.fn(), jest.fn(), jest.fn(), jest.fn()]
+    class Trait1 {
+      static t1() { ts1() }
+      t1() { t1() }
+    }
+  
+    class Trait2 {
+      t2() { t2() }
+    }
+  
+    class Test extends Mixed(Trait1, Trait2) {
+      test() { test() }
+    }
+  
+    const instance = new Test()
+  
+    Test.t1()
+    instance.t1()
+    instance.t2()
+    instance.test()
+  
+    expect(ts1).toHaveBeenCalled()
+    expect(t1).toHaveBeenCalled()
+    expect(t2).toHaveBeenCalled()
+    expect(test).toHaveBeenCalled()
+  })
+
+  it('should emerge a description with that of your trait', () => {
+    class Trait1 {
+      protected _text: string = 'some trait 1 text'
+  
+      public get text() {
+        return this._text
+      }
+      public set text(text) {
+        this._text = text
+      }
+    }
+  
+    class Trait2 {
+      protected _text!: string
+  
+      public get text() {
+        return `Trait2 text: ${this._text}`
+      }
+    }
+  
+    class Test extends Mixed(Trait1, Trait2) {}
+  
+    const instance = new Test()
+    expect(instance.text).toBe('Trait2 text: some trait 1 text')
+    instance.text = 'some test text'
+    expect(instance.text).toBe('Trait2 text: some test text')
   })
 })
