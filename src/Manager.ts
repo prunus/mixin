@@ -110,6 +110,11 @@ export class Manager {
         if: property => !this._prototype.includes(property)
       })
 
+      inherit.inheritancesOf(constructor).forEach(heritage => {
+        this.inheritances.push(heritage)
+        this.constructor._bindHasInstance(heritage)
+      })
+
       this.constructor._bindHasInstance(constructor)
     }
 

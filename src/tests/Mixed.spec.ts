@@ -259,4 +259,12 @@ describe('Mixed', () => {
     instance.text = 'some test text'
     expect(instance.text).toBe('Trait2 text: some test text')
   })
+
+  it('should inherit prototype from your trait\'s inheritance', () => {
+    class SomeClass {}
+    class Trait extends SomeClass {}
+    class Test extends Mixed(Trait) {}
+  
+    expect(new Test()).toBeInstanceOf(SomeClass)
+  })
 })

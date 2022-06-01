@@ -10,8 +10,17 @@ const clean = <T>(record: T): T =>
     Object.entries(record).filter(([key, value]) => value !== undefined)
   ) as T
 
-export const inherit = (target: any, heritage: any, { blacklist: bl, if: allow }: InheritOptions) => {
+const ROOT_CONSTRUCTOR = Object.getPrototypeOf(function() {})
+const ROOT_PROTOTYPE = Object.getPrototypeOf({})
+const ROOTS = [ROOT_CONSTRUCTOR, ROOT_PROTOTYPE]
+
+export const inherit = (target: any, heritage: any, options: InheritOptions) => {
+  const { blacklist: bl, if: allow } = options
   const blacklist = bl.concat(DEFAULT_BLACKLIST)
+
+  if (!ROOTS.includes(Object.getPrototypeOf(heritage)))
+
+    inherit(target, Object.getPrototypeOf(heritage), options)
 
   for (const property of Reflect.ownKeys(heritage)) {
     if (blacklist.includes(property)) continue
@@ -33,4 +42,16 @@ export const inherit = (target: any, heritage: any, { blacklist: bl, if: allow }
 
     else Object.defineProperty(target, property, herintagePropertyDescriptor)
   }
+}
+
+inherit.inheritancesOf = (target: Function) => {
+  const inheritances: Function[] = []
+  let current = Object.getPrototypeOf(target)
+
+  while(current !== ROOT_CONSTRUCTOR) {
+    inheritances.push(current)
+    current = Object.getPrototypeOf(current)
+  }
+
+  return inheritances
 }
