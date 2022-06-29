@@ -267,4 +267,34 @@ describe('Mixed', () => {
   
     expect(new Test()).toBeInstanceOf(SomeClass)
   })
+
+  it.only('t', () => {
+    const [trait1Setup, trait2Setup, testSetup] = [jest.fn(), jest.fn(), jest.fn()]
+    class Trait1 {
+      protected setup() {
+        trait1Setup()
+      }
+    }
+    class Trait2 {
+      protected setup() {
+        trait2Setup()
+      }
+    }
+    class Test extends Mixed(Trait1, Trait2) {
+      public setup(): void {
+        this.forEachSuper(self => {
+          self.setup()
+        })
+        testSetup()
+      }
+    }
+
+    const test = new Test()
+
+    test.setup()
+
+    expect(trait1Setup).toHaveBeenCalled()
+    expect(trait2Setup).toHaveBeenCalled()
+    expect(testSetup).toHaveBeenCalled()
+  })
 })
