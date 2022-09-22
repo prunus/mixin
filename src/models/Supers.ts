@@ -6,7 +6,7 @@ export class Supers<T> {
   constructor(private design: Design, private that: Record<string | symbol, unknown>) {}
 
   public for(context: Function): T {
-    if (!this.design.has(context)) throw new Error("TODO");
+    if (!this.design.has(context)) throw new Error(`context must be a function but receive ${typeof context}`);
 
     if (this._instances.has(context))
 

@@ -6,7 +6,7 @@ export class Design {
   public static for(target: Function, force: true): Design
   public static for(target: Function, force?: false): Design | null
   public static for(target: Function, force = false): Design | null {
-    if (typeof target !== 'function') throw new Error("TODO");
+    if (typeof target !== 'function') throw new Error(`target must be a function but receive ${typeof target}`);
     
     if (!Design.designs.has(target) && force) {
       const design = new this(target)
