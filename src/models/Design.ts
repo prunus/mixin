@@ -54,9 +54,9 @@ export class Design {
   protected constructor(private target: Function) {
     const that = this
     this.class = function (this: Record<string | symbol, unknown>, ...args: unknown[]) {
-      this.supers = new Supers(that, this)
       that.inheritances.forEach(inheritance => inheritance.call(this, ...args))
       that.target.call(this, ...args)
+      this.supers = new Supers(that, this)
       return this
     }
 
