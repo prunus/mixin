@@ -91,7 +91,7 @@ interface Class extends Trait3 {}
 We haven't forgotten about the overlay, and we never will, that's why we remember our super. Unfortunately we can't fight js for the position of `super` inside the class, but it is a property of our `this.super`.
 
 ```ts
-import { Mixin } from '@prunus/mixin'
+import { Mixin, Mixed } from '@prunus/mixin'
 
 class Trait {
   say() {
@@ -99,16 +99,27 @@ class Trait {
   }
 }
 
-@Mixin(Trait)
-class Class {
+class Class extends Mixed(Trait) {
   say() {
-    this.super.say()
+    this.supers.for(Trait).say()
     console.log('Hello world i\'am a mixin')
   }
 }
+
+#or
+
+@Mixin(Trait)
+class Class {
+  say() {
+    this.supers.for(Trait).say()
+    console.log('Hello world i\'am a mixin')
+  }
+}
+
 interface Class extends Trait {
   super: this
 }
+
 ```
 ---
 
@@ -173,11 +184,11 @@ If you use typescript it's simple, let's tax some of our features for that.
 If you don't want to use our beautiful decorator, you can disable `experimentalDecorators`. But remember we won't be able to assemble your class pointer at runtime without decorators. So your syntax will have to be something like this:
 
 ```ts
-import { mixin } from '@prunus/mixin'
+import { Mixin } from '@prunus/mixin'
 
-const MixinClass = mixin(class Class {})(...traits)
+const MixinClass = Mixin(class Class {})(...traits)
 
-const MixinFunction = mixin(function Class(this: Class) {
+const MixinFunction = Mixin(function Class(this: Class) {
   return this
 })(...traits)
 ```

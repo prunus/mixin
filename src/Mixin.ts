@@ -1,8 +1,7 @@
-import { Manager } from "./Manager"
-import { AnyConstructor } from "./types"
+import { Design } from "./models/Design"
 
-export const Mixin = (...inheritances: AnyConstructor[]): ClassDecorator => {
-  return <T extends Function>(target: T) => {
-    return Manager.get(target).use(...inheritances.reverse()).class as T
+export function Mixin(...traits: Function[]): ClassDecorator {
+  return <TFunction extends Function>(target: TFunction) => {
+    return Design.for(target, true).use(...traits.reverse()).class as TFunction
   }
 }

@@ -268,33 +268,132 @@ describe('Mixed', () => {
     expect(new Test()).toBeInstanceOf(SomeClass)
   })
 
-  it.only('t', () => {
-    const [trait1Setup, trait2Setup, testSetup] = [jest.fn(), jest.fn(), jest.fn()]
-    class Trait1 {
-      protected setup() {
-        trait1Setup()
+  describe('should supers works', () => {
+    it('supers forEach', () => {
+      const [t1s, t2s, t3s] = [jest.fn(), jest.fn(), jest.fn()]
+      class T1 {
+        protected setup() { t1s() }
       }
+      class T2 {
+        protected setup() { t2s() }
+      }
+      class T3 extends Mixed(T1, T2) {
+        public setup(): void {
+          this.supers.forEach(that => that.setup())
+          t3s()
+        }
+      }
+  
+      const test = new T3()
+  
+      test.setup()
+  
+      expect(t1s).toHaveBeenCalled()
+      expect(t2s).toHaveBeenCalled()
+      expect(t3s).toHaveBeenCalled()
+    })
+
+    it('supers map', () => {
+      const [t1c, t2c, t3c] = [jest.fn(() => 1), jest.fn(() => 2), jest.fn(() => 3)]
+      class T1 {
+        protected call() { return t1c() }
+      }
+      class T2 {
+        protected call() { return t2c() }
+      }
+      class T3 extends Mixed(T1, T2) {
+        public call() {
+          this.supers.map(that => that.call())
+          return t3c()
+        }
+      }
+
+      new T3().call()
+  
+      expect(t1c).toHaveBeenCalled()
+      expect(t2c).toHaveBeenCalled()
+      expect(t3c).toHaveBeenCalled()
+    })
+
+    it('supers persistance', () => {
+      const [t1c, t2c, t3c] = [jest.fn(() => 1), jest.fn(() => 2), jest.fn(() => 3)]
+      class T1 {
+        protected call() { return t1c() }
+      }
+      class T2 {
+        protected call() { return t2c() }
+      }
+      class T3 extends Mixed(T1, T2) {
+        public call() {
+          this.supers.map(that => that.call())
+          this.supers.map(that => that.call())
+          return t3c()
+        }
+      }
+
+      new T3().call()
+
+      expect(t1c).toHaveBeenCalledTimes(2)
+      expect(t2c).toHaveBeenCalledTimes(2)
+      expect(t3c).toHaveBeenCalled()
+    })
+
+    it('supers set', () => {
+      const t1k = Symbol.for('t1.value')
+      const t2k = Symbol.for('t2.value')
+      class T1 {
+        private [t1k] = 0
+        set value(value: number) { this[t1k] = value }
+        get value() { return this[t1k] }
+      }
+      class T2 {
+        private [t2k] = 0
+        set value(value: number) { this[t2k] = value + 1 }
+        get value() { return this[t2k] }
+      }
+      class T3 extends Mixed(T1, T2) {
+        setValue(value: number) {
+          this.supers.forEach(that => that.value = value)
+          return this
+        }
+        getValueBy(target: Function) {
+          return this.supers.for(target).value
+        }
+      }
+
+      expect(new T3().setValue(4).getValueBy(T1)).toBe(4)
+      expect(new T3().setValue(4).getValueBy(T2)).toBe(5)
+    })
+
+    describe('throw error on try super trait unqualified value type', () => {
+      class T1 {}
+      class T2 extends Mixed(T1) {}
+
+      it.each([null, undefined, 0, 'string', 123, Symbol('symbol'), {}])('trying on %p should throw the error', (attempt) => {
+        expect(() => {
+          new T2().supers.for(attempt as any)
+        }).toThrowError()
+      })
+    })
+  })
+
+  it('should extends values attr from static properties', () => {
+    class T1 {
+      public static value = true
     }
-    class Trait2 {
-      protected setup() {
-        trait2Setup()
-      }
-    }
-    class Test extends Mixed(Trait1, Trait2) {
-      public setup(): void {
-        this.forEachSuper(self => {
-          self.setup()
-        })
-        testSetup()
-      }
+    class T2 extends Mixed(T1) {}
+
+    expect(T2.value).toBeTruthy()
+  })
+  it('should extends values attr from static properties', () => {
+    class T1 {
+      public value!: boolean
     }
 
-    const test = new Test()
+    T1.prototype.value = true
 
-    test.setup()
+    class T2 extends Mixed(T1) {}
 
-    expect(trait1Setup).toHaveBeenCalled()
-    expect(trait2Setup).toHaveBeenCalled()
-    expect(testSetup).toHaveBeenCalled()
+    expect(new T2().value).toBeTruthy()
   })
 })
