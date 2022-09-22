@@ -11,7 +11,11 @@ type MixedConstructor<P, S, F extends Function[]> = S & {
   new (...args: unknown[]): MixedInstance<P>
 }
 
-type PrototypeOf<T extends Function> = T extends new (...args: any[]) => infer TPrototype ? TPrototype : {}
+type PrototypeOf<T extends Function> =
+  T extends
+   | (new (...args: any[]) => infer TPrototype)
+   | (abstract new (...args: any[]) => infer TPrototype)
+   ? TPrototype : {}
 
 type PropertiesOf<T extends Function> = { [K in keyof T]: T[K] }
 
