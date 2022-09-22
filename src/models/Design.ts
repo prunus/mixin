@@ -130,29 +130,29 @@ export class Design {
         })
       })
 
-      if ((current as unknown as Record<symbol, unknown>)[Symbol.for('isTrait')]) return void 0
+      if (!(current as unknown as Record<symbol, unknown>)[Symbol.for('isTrait')]) {
+        const hasInstance = current[Symbol.hasInstance].bind(current)
+        Reflect.defineProperty(current, Symbol.for('isTrait'), { value: true, configurable: false, writable: false, enumerable: false })
+        Reflect.defineProperty(current, Symbol.hasInstance, {
+          value: (value: Record<string, unknown>) => {
+            if (hasInstance(value)) return true
 
-      const hasInstance = current[Symbol.hasInstance].bind(current)
-      Reflect.defineProperty(current, Symbol.for('isTrait'), { value: true, configurable: false, writable: false, enumerable: false })
-      Reflect.defineProperty(current, Symbol.hasInstance, {
-        value: (value: Record<string, unknown>) => {
-          if (hasInstance(value)) return true
+            let constructor = value.constructor
 
-          let constructor = value.constructor
+            do {
+              const design = Design.for(constructor)
 
-          do {
-            const design = Design.for(constructor)
+              if (design) {
+                if (design.has(current)) return true
+              }
 
-            if (design) {
-              if (design.has(current)) return true
-            }
+              constructor = Reflect.getPrototypeOf(constructor) as Function
+            } while(constructor !== Reflect.getPrototypeOf(function() {}))
 
-            constructor = Reflect.getPrototypeOf(constructor) as Function
-          } while(constructor !== Reflect.getPrototypeOf(function() {}))
-
-          return false
-        }
-      })
+            return false
+          }
+        })
+      }
 
       trait = Reflect.getPrototypeOf(trait) as Function
     } while (trait !== Reflect.getPrototypeOf(function() {}))
