@@ -98,6 +98,36 @@ class Class extends Mixed(Trait) {
 }
 
 ```
+
+---
+
+### All instanceof instructions working correctly
+
+In your code you can check if that instance of your dear mix is an instance of some other class within the mix. Example:
+
+```ts
+import { Mixed } from '@prunus/mixin'
+
+class Trait1 {}
+
+class Trait2 {}
+
+class Trait3 {}
+
+class Trait4 extends Mixed(Trai1, Trait3)
+
+class Test extends Mixed(Trait1, Trait2) {}
+
+console.log(new Test() instanceof Trait1) // true
+console.log(new Test() instanceof Trait2) // true
+console.log(new Test() instanceof Trait3) // false
+console.log(new Test() instanceof Trait4) // false
+console.log(new Trait4() instanceof Trait3) // true
+console.log(new Trait4() instanceof Trait1) // false
+console.log(new Trait4() instanceof Trait2) // false
+console.log(new Trait4() instanceof Test) // false
+```
+
 ---
 
 ## Limitations
@@ -179,6 +209,3 @@ In that case you can also configure the babel decorator plugin, we recommend tha
 ## What's to come
 
 - Documentation and examples of integration with libs like typeorm
-- Research on how to make `instanceof` work correctly when compared to a trait. Otherwise create functions for comparison in a sematic way.
-- A super smart that adapts when called within a trait with dependencies.
-- Smart methods that can be polymorphic depending on who calls them (mixins or traits).
