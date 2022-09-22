@@ -27,6 +27,17 @@ yarn add @prunus/mixin
 This is the purpose of this lib, to give readability to your code in a clean way and with little code. This, along with the __typescript [mixin](https://www.typescriptlang.org/docs/handbook/mixins.html) feature__, makes it even more exciting as they complement each other extremely well.
 
 ```ts
+import { Mixed } from '@prunus/mixin'
+
+class Trait1 {}
+class Trait2 {}
+
+class Class extends Mixed(Trait1, Trait2) {}
+```
+
+Or
+
+```ts
 import { Mixin } from '@prunus/mixin'
 
 class Trait1 {}
@@ -98,15 +109,6 @@ class Trait {
     console.log('Hello world i\'am a trait')
   }
 }
-
-class Class extends Mixed(Trait) {
-  say() {
-    this.supers.for(Trait).say()
-    console.log('Hello world i\'am a mixin')
-  }
-}
-
-#or
 
 @Mixin(Trait)
 class Class {
