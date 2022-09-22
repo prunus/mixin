@@ -186,11 +186,11 @@ If you don't want to use our beautiful decorator, you can disable `experimentalD
 ```ts
 import { Mixin } from '@prunus/mixin'
 
-const MixinClass = Mixin(class Class {})(...traits)
+const MixinClass = Mixin(...traits)(class Class {})
 
-const MixinFunction = Mixin(function Class(this: Class) {
+const MixinFunction = Mixin(...traits)(function Class(this: Class) {
   return this
-})(...traits)
+})
 ```
 
 ### **Babel**
