@@ -20,7 +20,11 @@ export class Supers<T> {
 
         if (descriptor?.get) return descriptor.get.call(this.that)
 
-        return target[property]
+        if (target[property] !== undefined) return target[property]
+
+        const thatDescriptor = Reflect.getOwnPropertyDescriptor(this.that, property)
+
+        if (thatDescriptor && thatDescriptor.value !== undefined) return thatDescriptor.value
       },
       set: (target, property, value) => {
         const descriptor = Reflect.getOwnPropertyDescriptor(target, property)
