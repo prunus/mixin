@@ -365,6 +365,20 @@ describe('Mixed', () => {
       expect(new T3().setValue(4).getValueBy(T2)).toBe(5)
     })
 
+    it('supers get property inside child instance', () => {
+      abstract class T1 {
+        public abstract value: number
+
+        call() { return this.value }
+      }
+
+      class T2 extends Mixed(T1) {
+        public value: number = 5;
+      }
+
+      expect(new T2().supers.for(T1).call()).toBe(5)
+    })
+
     describe('throw error on try super trait unqualified value type', () => {
       class T1 {}
       class T2 extends Mixed(T1) {}
@@ -385,6 +399,7 @@ describe('Mixed', () => {
 
     expect(T2.value).toBeTruthy()
   })
+
   it('should extends values attr from static properties', () => {
     class T1 {
       public value!: boolean
