@@ -2,6 +2,10 @@
   "name": "@prunus/mixin",
   "version": "0.1.0",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prunus/mixin.git"
+  },
   "author": "Tony <tony.js@zoho.eu>",
   "license": "MIT",
   "files": [
