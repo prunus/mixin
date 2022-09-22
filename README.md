@@ -56,53 +56,30 @@ Test! Write some properties of your traits and your class and watch the magic ha
 We certainly do not encourage you to do this, but it is a feature that could not be left out, due to some specific needs that the developer may have.
 
 ```ts
-import { mixin, trait } from '@prunus/mixin'
-
-const Trait1 = trait(function Trait1(this: Trait1) {
-  return this
-})()
-
-interface Trait1 {}
-
-const Trait2 = trait(class Trait2 {})()
-
-type Trait2 = InstanceType<typeof Trait2>
-
-const Test = mixin(function Test(this: Test) {
-  return this
-})(Trait1, Trait2)
-
-interface Test extends Trait1, Trait2 {}
-```
-
-As you can see in this way, we lose readability, it can make the code confusing depending on how complex our trait or class code is, even separating it into files... But it works, so your imagination is the limit.
-
-### **Trait dependencies**
-You can declare that a trait needs a dependency, and without it, the mixin won't work.
-
-```ts
-import { Trait, Mixin } from '@prunus/mixin'
+import { Mixin } from '@prunus/mixin'
 
 class Trait1 {}
 
 class Trait2 {}
 
-@Trait(Trait1, Trait2)
-class Trait3 {}
-interface Trait3 extends Trait1, Trait2 {}
+class TestClass {}
 
-@Mixin(Trait3) // throw expection
-class Class {}
+const Test: TestConstructor = Mixin(Trait1, Trait2)(TestClass)
 
-interface Class extends Trait3 {}
+interface TestClass extends Trait1, Trait2 {}
+interface TestConstructor {
+  new (): TestClass
+}
 ```
 
-### Super of super
+As you can see in this way, we lose readability, it can make the code confusing depending on how complex our trait or class code is, even separating it into files... But it works, so your imagination is the limit.
 
-We haven't forgotten about the overlay, and we never will, that's why we remember our super. Unfortunately we can't fight js for the position of `super` inside the class, but it is a property of our `this.super`.
+### Supers
+
+We haven't forgotten about the overlay, and we never will, that's why we remember our super. Unfortunately we can't fight js for the position of `super` inside the class, but it is a property of our `this.supers`.
 
 ```ts
-import { Mixin, Mixed } from '@prunus/mixin'
+import { Mixed } from '@prunus/mixin'
 
 class Trait {
   say() {
@@ -110,16 +87,14 @@ class Trait {
   }
 }
 
-@Mixin(Trait)
-class Class {
+class Class extends Mixed(Trait) {
   say() {
     this.supers.for(Trait).say()
+    # or
+    this.supers.forEach(that => that.say())
+
     console.log('Hello world i\'am a mixin')
   }
-}
-
-interface Class extends Trait {
-  super: this
 }
 
 ```
