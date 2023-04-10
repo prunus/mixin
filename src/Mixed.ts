@@ -1,8 +1,8 @@
 import { Mixin } from "./Mixin";
 import { Supers } from "./models/Supers";
 
-interface MixedSupers {
-  supers: Supers<this>
+declare class MixedSupers {
+  public supers: Supers<this>
 }
 
 type MixedInstance<P> = P & MixedSupers
