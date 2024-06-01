@@ -272,14 +272,14 @@ describe('Mixed', () => {
     it('supers forEach', () => {
       const [t1s, t2s, t3s] = [jest.fn(), jest.fn(), jest.fn()]
       class T1 {
-        protected setup() { t1s() }
+        public setup() { t1s() }
       }
       class T2 {
-        protected setup() { t2s() }
+        public setup() { t2s() }
       }
       class T3 extends Mixed(T1, T2) {
         public setup(): void {
-          this.supers.forEach(that => that.setup())
+          this.supers.each(that => that.setup())
           t3s()
         }
       }
@@ -293,49 +293,63 @@ describe('Mixed', () => {
       expect(t3s).toHaveBeenCalled()
     })
 
-    it('supers map', () => {
-      const [t1c, t2c, t3c] = [jest.fn(() => 1), jest.fn(() => 2), jest.fn(() => 3)]
+    it('supers each', () => {
+      const t1c = jest.fn(() => 1)
+      const t2c = jest.fn(() => 2)
+      const t3c = jest.fn((args: number[]) => 3)
       class T1 {
-        protected call() { return t1c() }
+        public call() { return t1c() }
       }
       class T2 {
-        protected call() { return t2c() }
+        public call() { return t2c() }
       }
       class T3 extends Mixed(T1, T2) {
         public call() {
-          this.supers.map(that => that.call())
-          return t3c()
+          return t3c(this.supers.each(proto => proto.call()))
         }
       }
+
+      expect(t1c).not.toHaveBeenCalled()
+      expect(t2c).not.toHaveBeenCalled()
+      expect(t3c).not.toHaveBeenCalledWith([1, 2])
 
       new T3().call()
   
       expect(t1c).toHaveBeenCalled()
       expect(t2c).toHaveBeenCalled()
-      expect(t3c).toHaveBeenCalled()
+      expect(t3c).toHaveBeenCalledWith([1, 2])
     })
 
-    it('supers persistance', () => {
-      const [t1c, t2c, t3c] = [jest.fn(() => 1), jest.fn(() => 2), jest.fn(() => 3)]
+    it('supers persist super instance', () => {
+      const t1c = jest.fn(() => 1)
+      const t2c = jest.fn(() => 2)
+      const t3c = jest.fn((args: number[]) => 3)
+
       class T1 {
-        protected call() { return t1c() }
+        public call() { return t1c() }
       }
       class T2 {
-        protected call() { return t2c() }
+        public call() { return t2c() }
       }
       class T3 extends Mixed(T1, T2) {
         public call() {
-          this.supers.map(that => that.call())
-          this.supers.map(that => that.call())
-          return t3c()
+          return t3c(this.supers.each(that => that.call()))
         }
       }
 
-      new T3().call()
+      const mixed = new T3()
+
+      jest.spyOn(mixed.supers, '_create' as any)
+
+      mixed.call()
+      mixed.call()
+
+      expect(mixed.supers['_create']).toHaveBeenCalledTimes(2)
 
       expect(t1c).toHaveBeenCalledTimes(2)
       expect(t2c).toHaveBeenCalledTimes(2)
-      expect(t3c).toHaveBeenCalled()
+      expect(t3c).toHaveBeenNthCalledWith(1, [1, 2])
+      expect(t3c).toHaveBeenNthCalledWith(2, [1, 2])
     })
 
     it('supers set', () => {
@@ -343,20 +357,23 @@ describe('Mixed', () => {
       const t2k = Symbol.for('t2.value')
       class T1 {
         private [t1k] = 0
+
         set value(value: number) { this[t1k] = value }
         get value() { return this[t1k] }
       }
       class T2 {
         private [t2k] = 0
+
         set value(value: number) { this[t2k] = value + 1 }
         get value() { return this[t2k] }
       }
       class T3 extends Mixed(T1, T2) {
         setValue(value: number) {
-          this.supers.forEach(that => that.value = value)
+          this.supers.each(that => that.value = value)
           return this
         }
-        getValueBy(target: Function) {
+
+        getValueBy(target: typeof T1 | typeof T2) {
           return this.supers.for(target).value
         }
       }

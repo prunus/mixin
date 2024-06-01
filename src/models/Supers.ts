@@ -1,18 +1,13 @@
+import { Class, ExtractClass } from "../typings";
 import { Design } from "./Design";
 
-export class Supers<T> {
-  private _instances = new Map<Function, T>()
+export class Supers<TClass extends readonly Class[]> {
+  private _instances = new Map<Function, any>()
 
   constructor(private design: Design, private that: Record<string | symbol, unknown>) {}
 
-  public for(context: Function): T {
-    if (!this.design.has(context)) throw new Error(`context must be a function but receive ${typeof context}`);
-
-    if (this._instances.has(context))
-
-      return this._instances.get(context)!
-
-    const instance = new Proxy(Object.create(context.prototype), {
+  private _create<T extends ExtractClass<TClass>>(constructor: T): InstanceType<T> {
+    const proxy = new Proxy(Object.create(constructor.prototype), {
       get: (target, property) => {
         const descriptor = Reflect.getOwnPropertyDescriptor(target, property)
 
@@ -37,16 +32,30 @@ export class Supers<T> {
       },
     })
 
-    this._instances.set(context, instance)
+    return proxy
+  }
+
+  public for<T extends ExtractClass<TClass>>(constructor: T): InstanceType<T> {
+    if (!this.design.has(constructor))
+
+      throw new Error(`constructor must be a function but receive ${typeof constructor}`);
+
+    if (this._instances.has(constructor))
+
+      return this._instances.get(constructor)!
+
+    const instance = this._create(constructor)
+
+    this._instances.set(constructor, instance)
 
     return instance
   }
 
-  public forEach(fn: (instance: T) => void) {
-    this.design.inheritances.forEach(inherit => fn(this.for(inherit) as T))
-  }
+  public each<T>(fn: (target: InstanceType<ExtractClass<TClass>>) => T): T[] {
+    return this.design.inheritances.slice().reverse().map((inherit: any) => {
+      const target = this.for(inherit)
 
-  public map<TReturn>(fn: (instance: T) => TReturn): TReturn[] {
-    return this.design.inheritances.map(inherit => fn(this.for(inherit) as T))
+      return fn.call(target, target)
+    })
   }
 }
